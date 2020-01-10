@@ -5,7 +5,7 @@
 Summary:   Xorg X11 acecad input driver
 Name:      xorg-x11-drv-acecad
 Version:   1.5.0
-Release:   3%{?dist}
+Release:   6%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
@@ -56,6 +56,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man4/acecad.4*
 
 %changelog
+* Wed Aug 22 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.5.0-6
+- Rebuild for server 1.13
+
+* Wed Aug 22 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.5.0-5
+- Rebuild for server 1.13
+
+* Wed Aug 01 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.5.0-4
+- Rebuild for server 1.13 (#835212)
+
 * Tue Jul 19 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.5.0-3
 - Fix crashes on PreInit failure
 

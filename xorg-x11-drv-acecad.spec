@@ -5,7 +5,7 @@
 Summary:   Xorg X11 acecad input driver
 Name:      xorg-x11-drv-acecad
 Version:   1.5.0
-Release:   7%{?dist}
+Release:   8%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man4/acecad.4*
 
 %changelog
+* Wed Nov 11 2015 Adam Jackson <ajax@redhat.com> 1.5.0-8
+- Rebuild for server 1.17
+
 * Wed Apr 23 2014 Adam Jackson <ajax@redhat.com> 1.5.0-7
 - Rebuild for server 1.15
 

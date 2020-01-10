@@ -4,26 +4,36 @@
 
 Summary:   Xorg X11 acecad input driver
 Name:      xorg-x11-drv-acecad
-Version: 1.4.0
-Release: 2%{?dist}
+Version:   1.5.0
+Release:   3%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Source0:   ftp://ftp.x.org/pub/individual/driver/%{tarball}-%{version}.tar.bz2
+Patch01:   0001-Stop-crash-on-ABI-12-startup.patch
+Patch02:   0001-Always-set-the-type-name.patch
+Patch03:   0001-Dont-call-xf86DeleteInput-on-PreInit-failure.patch
+Patch04:   0001-Don-t-free-anything-in-PreInit-provide-an-UnInit-ins.patch
 
 ExcludeArch: s390 s390x
 
 BuildRequires: xorg-x11-server-sdk >= 1.3.0.0-6
 BuildRequires: xorg-x11-util-macros >= 1.3.0
 
-Requires:  xorg-x11-server-Xorg >= 1.3.0.0-6
+Requires:  Xorg %(xserver-sdk-abi-requires ansic)
+Requires:  Xorg %(xserver-sdk-abi-requires xinput)
+
 %description 
 X.Org X11 acecad input driver.
 
 %prep
 %setup -q -n %{tarball}-%{version}
+%patch01 -p1
+%patch02 -p1
+%patch03 -p1
+%patch04 -p1
 
 %build
 %configure --disable-static
@@ -46,6 +56,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man4/acecad.4*
 
 %changelog
+* Tue Jul 19 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.5.0-3
+- Fix crashes on PreInit failure
+
+* Fri Jul 08 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.5.0-2
+- 0001-Always-set-the-type-name.patch: set the type name to something other
+  than "UNKNOWN"
+
+* Mon Jun 27 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.5.0-1
+- acecad 1.5.0 (#713777)
+- 0001-Stop-crash-on-ABI-12-startup.patch
+
 * Wed Jan 06 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.4.0-2
 - Use global instead of define per Packaging Guidelines
 

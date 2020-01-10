@@ -1,0 +1,27 @@
+From 747012b6f4dae1fca0c6cf97c479cce5e50420b2 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Fri, 8 Jul 2011 12:24:16 +1000
+Subject: [PATCH] Always set the type name.
+
+The server assigns "UNKNOWN", override it with something more specific.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ src/acecad.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/src/acecad.c b/src/acecad.c
+index c086107..dc166ad 100644
+--- a/src/acecad.c
++++ b/src/acecad.c
+@@ -387,6 +387,7 @@ AceCadPreInit(InputDriverPtr drv, InputInfoPtr local, int flags)
+ 
+     local->device_control = DeviceControl;
+     local->private = priv;
++    local->type_name = XI_TABLET;
+ 
+     priv->acecadInc = xf86SetIntOption(local->options, "Increment", 0 );
+ 
+-- 
+1.7.5.4
+

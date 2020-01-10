@@ -1,0 +1,94 @@
+From 077c063ea7994e05ce12205626efbfa6acfc6d78 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 19 Jul 2011 14:13:33 +1000
+Subject: [PATCH] Don't free anything in PreInit, provide an UnInit instead.
+
+Also fixes:
+- leaking priv->buffer
+- fd closure bug
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+(cherry picked from commit 2f1a5b44f62028f2608c0c94e58154df09e9ada3)
+
+Conflicts:
+
+	src/acecad.h
+
+RHEL6 addition: always init the fd to -1. Init path for xorg.conf devices
+causes it to be 0 by default.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ src/acecad.c |   25 ++++++++++++++++++-------
+ src/acecad.h |    1 +
+ 2 files changed, 19 insertions(+), 7 deletions(-)
+
+diff --git a/src/acecad.c b/src/acecad.c
+index 2c9ead6..d3c6a23 100644
+--- a/src/acecad.c
++++ b/src/acecad.c
+@@ -124,7 +124,7 @@ _X_EXPORT InputDriverRec ACECAD =
+ 	"acecad",
+ 	NULL,
+ 	AceCadPreInit,
+-	NULL,
++	AceCadUnInit,
+ 	NULL,
+ #if GET_ABI_MAJOR(ABI_XINPUT_VERSION) >= 12
+ 	default_options
+@@ -388,6 +388,7 @@ AceCadPreInit(InputDriverPtr drv, InputInfoPtr local, int flags)
+     local->device_control = DeviceControl;
+     local->private = priv;
+     local->type_name = XI_TABLET;
++    local->fd = -1;
+ 
+     priv->acecadInc = xf86SetIntOption(local->options, "Increment", 0 );
+ 
+@@ -507,16 +508,26 @@ AceCadPreInit(InputDriverPtr drv, InputInfoPtr local, int flags)
+      * If something went wrong, cleanup and return NULL
+      */
+ SetupProc_fail:
+-    if ((local) && (local->fd))
++    return BadAlloc;
++}
++
++static void
++AceCadUnInit(InputDriverPtr drv, InputInfoPtr local, int flags)
++{
++    AceCadPrivatePtr priv = (AceCadPrivatePtr) (local->private);
++
++    if (local->fd > -1)
++    {
+         xf86CloseSerial (local->fd);
+-    if ((priv) && (priv->buffer))
+-        XisbFree (priv->buffer);
++        local->fd = -1;
++    }
++
+     if (priv) {
++        if (priv->buffer)
++            XisbFree (priv->buffer);
+         free (priv);
+-	if (local)
+-		local->private = NULL;
++        local->private = NULL;
+     }
+-    return BadAlloc;
+ }
+ 
+ static Bool
+diff --git a/src/acecad.h b/src/acecad.h
+index a2b5c66..c9a544a 100644
+--- a/src/acecad.h
++++ b/src/acecad.h
+@@ -111,6 +111,7 @@ static InputInfoPtr AceCadPreInit(InputDriverPtr, IDevPtr , int);
+ #else
+ static int AceCadPreInit(InputDriverPtr, InputInfoPtr , int);
+ #endif
++static void AceCadUnInit(InputDriverPtr, InputInfoPtr , int);
+ #ifdef HAVE_LINUX_INPUT_H
+ static void USBReadInput (InputInfoPtr);
+ static Bool USBQueryHardware (InputInfoPtr);
+-- 
+1.7.6
+

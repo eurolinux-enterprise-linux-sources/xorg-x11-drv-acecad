@@ -1,0 +1,41 @@
+From 7eb29fb4d96eb231eb238fd5d49a3f62fa4618c6 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Mon, 27 Jun 2011 02:46:29 +1000
+Subject: [PATCH] Stop crash on ABI 12 startup.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ src/acecad.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/src/acecad.c b/src/acecad.c
+index 6259f21..c086107 100644
+--- a/src/acecad.c
++++ b/src/acecad.c
+@@ -338,7 +338,6 @@ static InputInfoPtr
+ AceCadPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
+ {
+     InputInfoPtr local = xf86AllocateInput(drv, 0);
+-    AceCadPrivatePtr priv = calloc (1, sizeof(AceCadPrivateRec));
+ 
+     if ((!local))
+         goto SetupProc_fail;
+@@ -354,7 +353,6 @@ AceCadPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
+     local->conversion_proc = ConvertProc;
+     local->reverse_conversion_proc = ReverseConvertProc;
+     local->dev = NULL;
+-    local->private = priv;
+     local->private_flags = 0;
+     local->conf_idev = dev;
+     /*local->always_core_feedback = 0;*/
+@@ -388,6 +386,7 @@ AceCadPreInit(InputDriverPtr drv, InputInfoPtr local, int flags)
+     memset(priv, 0, sizeof(AceCadPrivateRec));
+ 
+     local->device_control = DeviceControl;
++    local->private = priv;
+ 
+     priv->acecadInc = xf86SetIntOption(local->options, "Increment", 0 );
+ 
+-- 
+1.7.1
+
